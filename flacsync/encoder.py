@@ -91,6 +91,9 @@ class _Encoder(object):
          picture = sp.Popen( 'metaflac --export-picture-to=- "%s"' % (self.src), shell=True, stdout=sp.PIPE).communicate()[0]
       except:
          return None
+      # if the data is not large enough to be an image return nothing
+      if len(picture) < 3 :
+         return None
       # write the cover to a deterministic filename based on hash
       h = hashlib.md5()
       h.update(picture)
