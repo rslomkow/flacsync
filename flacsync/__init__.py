@@ -268,7 +268,7 @@ def get_dest_orphans( dest_dir, base_dir, sources ):
    return orphans
 
 
-def del_dest_orphans( dest_dir, base_dir, sources ):
+def del_dest_orphans( dest_dir, base_dir, sources, prompt=True ):
    """
    Interactively prompt the user to remove all orphaned files located in the
    destination file path(s).
@@ -286,7 +286,7 @@ def del_dest_orphans( dest_dir, base_dir, sources ):
    """
    # create list of orphans
    orphans = get_dest_orphans( dest_dir, base_dir, sources )
-   yes_to_all = False
+   yes_to_all = not prompt
    for o in orphans:
       rm = True
       if not yes_to_all:
@@ -473,6 +473,13 @@ def get_opts( argv ):
          type='choice', dest='enc_type', help=_help_str(helpstr))
 
    helpstr = """
+      force without prompting the removal of files and directories in the dest dir that have
+no
+      corresponding source file"""
+   parser.add_option( '-n', '--no-prompt-removal', dest='prompt',
+         default=True, action="store_false", help=_help_str(helpstr) )
+
+   helpstr = """
       prevent the removal of files and directories in the dest dir that have no
       corresponding source file"""
    parser.add_option( '-o', '--ignore-orphans', dest='del_orphans',
@@ -580,7 +587,7 @@ def main( argv=None ):
 
    # remove orphans, if defined
    if opts.del_orphans:
-      del_dest_orphans( opts.dest_dir, opts.base_dir, opts.sources)
+      del_dest_orphans( opts.dest_dir, opts.base_dir, opts.sources, prompt=opts.prompt)
 
    # exit if no work
    if not encoders: return
